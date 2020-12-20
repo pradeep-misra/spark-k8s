@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: spark-on-eks
+spec:
+  template:
+    spec:
+      containers:
+        - name: spark
+          image: xxxxx.ecr.us-east-2.amazonaws.com/k8tsspark:latest
+          command: [
+            "/bin/sh",
+            "-c",
+            "/opt/spark/bin/spark-submit \
+            --master k8s://https://10.100.0.1:443 \
+            --deploy-mode cluster \
+            --name spark-on-eks \
+            --conf spark.executor.instances=2 \
+            --conf spark.executor.memory=1G \
+            --conf spark.executor.cores=1 \
+            --conf spark.kubernetes.container.image=xxxx.ecr.us-east-2.amazonaws.com/k8tsspark:latest \
+            --conf spark.kubernetes.container.image.pullPolicy=Always \
+            --conf spark.kubernetes.authenticate.driver.serviceAccountName=spark \
+            --conf spark.kubernetes.pyspark.pythonVersion=3 \
+            --conf spark.hadoop.fs.s3a.impl=org.apache.hadoop.fs.s3a.S3AFileSystem \
+            local:///opt/jobs/sparkts.py" 
+          ]
+      serviceAccountName: spark
+      restartPolicy: Never
+  backoffLimit: 4
