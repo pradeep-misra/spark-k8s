@@ -1,0 +1,31 @@
+====================
+Cluster Setup
+====================
+time eksctl create cluster -f ./eksctl_ts.yaml
+kubectl apply -f ./spark-rbac.yaml
+kubectl describe nodes
+kubectl get nodes
+
+====================
+ECR Repository Setup
+====================
+aws ecr create-repository --repository-name k8tsspark --region us-east-2
+aws ecr get-login-password --region us-east-2 | docker login --username XXXX --password-stdin XXXXX
+
+====================
+Spark Base Image
+====================
+./bin/docker-image-tool.sh build
+
+====================
+Spark Code 
+====================
+docker build -t k8tsspark .
+docker tag k8tsspark:latest xxxxx/k8tsspark:latest
+docker push xxxxxx/k8tsspark:latest
+
+====================
+Run Spark Code 
+====================
+kubectl apply -f ./spark-job.yaml
+
