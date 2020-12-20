@@ -1,0 +1,22 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: spark-cluster
+  region: us-east-2
+  version: "1.15"
+
+availabilityZones: ["us-east-2a", "us-east-2b","us-east-2c"]
+
+nodeGroups:
+  - name: spark-nodes
+    instanceType: m5.large
+    volumeSize: 30
+    desiredCapacity: 2
+    privateNetworking: true
+    maxPodsPerNode: 10
+    iam:
+      attachPolicyARNs:
+        - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+        - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess 
